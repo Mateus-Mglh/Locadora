@@ -3,11 +3,11 @@
 #include <string.h>
 #include <time.h>
 
-//definem  constantes
+
 #define MAX_STRING 150        
 #define MAX_MOVIES 5
 
-//é uma estrutura de dados
+
 typedef struct {
   char title[MAX_STRING];
   int releaseDate;
@@ -17,93 +17,86 @@ typedef struct {
   int avaiability;
   char code[MAX_STRING];
 } Movie;
-//nome/tipo dessa estrutura
 
-//vetor que amarzenará os filmes
+
 Movie movies[MAX_MOVIES];
-
-//contador que será usado para dimensionar o vetor de filmes
 int totalMovies = 0;     
 void flush();
 
-//função de cadastro dos filmes
+
 Movie registerMovie() {       
-  printf("- - - - Cadastro de Filme - - - -\n");
+  printf("- - - - Movie Registration - - - -\n");
 
   Movie m;
-  printf("Titulo do filme: ");
-  //salva uma string com espaço. fgets(variável string, tamanho, stdin)
+  printf("Movie title: ");
   fgets(m.title, MAX_STRING, stdin);
   m.title[strcspn(m.title, "\n")] = '\0';
         
-  printf("Diretor: ");
+  printf("Director: ");
   fgets(m.director, MAX_STRING, stdin);
   m.director[strcspn(m.director, "\n")] = '\0';
         
-  printf("Genero: ");
+  printf("Genre: ");
   fgets(m.genre, MAX_STRING, stdin);
   m.genre[strcspn(m.genre, "\n")] = '\0';
     
-  printf("Ano de lancamento: ");
+  printf("Release date: ");
   scanf("%d", &m.releaseDate);
   flush();
     
-  printf("Avaliacao: ");
+  printf("Rating: ");
   scanf("%f", &m.rating);
   flush();
 
-  printf("Disponibilidade: ");
+  printf("Avaiability: ");
   scanf("%d", &m.avaiability);
   flush();
 
-  printf("Codigo do filme: ");
+  printf("Movie code: ");
   scanf("%s", &m.code);
   printf("\n");
   
-  printf("Filme registrado!\n");
+  printf("Movie registered!\n");
   printf("\n");
     
   return m;
 }
 
 
-//função que mostra os filmes cadastrados
 void showMovies() {
-  printf("- - - - Filmes Cadastrados - - - -\n");
+  printf("- - - - Movies Registered - - - -\n");
         
   for(int i = 0; i < totalMovies; i++) {
-    printf("Filme %d\n", i + 1);
-    printf("Titulo: %s\n", movies[i].title);
-    printf("Diretor: %s\n", movies[i].director);
-    printf("Genero: %s\n", movies[i].genre);
-    printf("Ano de Lancamento: %d\n", movies[i].releaseDate);
-    printf("Avaliacao: %.2f\n", movies[i].rating);
-    printf("Disponibilidade: %d\n", movies[i].avaiability);
-    printf("Codigo do filme: %s\n", movies[i].code);
+    printf("Movie %d\n", i + 1);
+    printf("Title: %s\n", movies[i].title);
+    printf("Director: %s\n", movies[i].director);
+    printf("Genre: %s\n", movies[i].genre);
+    printf("Release date: %d\n", movies[i].releaseDate);
+    printf("Rating: %.2f\n", movies[i].rating);
+    printf("Avaiability: %d\n", movies[i].avaiability);
+    printf("Movie code: %s\n", movies[i].code);
     printf("\n");
   }
 }
 
 
-//função que procura e mostra os dados de um filme pelo nome
 void searchMovie(char name[MAX_STRING], Movie movies[MAX_MOVIES]) {                
   for(int i = 0; i < totalMovies; i++) {
     Movie aux = movies[i];
-    //função que  compara duas strings. strcmp(string1, string2)
     int result = strcmp(name, aux.title);
     
     if(result == 0) {
-      printf("Ano de Lancamento: %d\n", aux.releaseDate);
-      printf("Diretor: %s\n", aux.director);
-      printf("Genero: %s\n", aux.genre);
-      printf("Avaliacao: %.2f\n", aux.rating);
-      printf("Disponibilidade: %d\n", aux.avaiability);
-      printf("Codigo do filme: %s\n", aux.code);
+      printf("Release date: %d\n", aux.releaseDate);
+      printf("Director: %s\n", aux.director);
+      printf("Genre: %s\n", aux.genre);
+      printf("Rating: %.2f\n", aux.rating);
+      printf("Avaiability: %d\n", aux.avaiability);
+      printf("Movie code: %s\n", aux.code);
       printf("\n");
       return;
     }
   }
-  printf("\nFilme nao encontrado!\n");
+  printf("\nMovie not found!\n");
   printf("\n");
 }
 
@@ -128,22 +121,18 @@ void deleteMovie(char name[MAX_STRING], Movie movies[MAX_MOVIES]) {
         movies[k] = movies[k + 1];
       
       totalMovies--;
-      printf("\nFilme deletado!\n");
+      printf("\nMovie deleted!\n");
       printf("\n");
     }
   }
 }
 
 
-//função para salvar os filmes
 void saveMovies() { 
-  //declarar uma variável FILE com um ponteiro que aponta para um arquivo "nome"
   FILE *file;
-  //a função fopen faz com que o ponteiro aponte para um arquivo . fopen("Endereço onde o arquivo será salvo, "nome do arquivo.txt", comando a ser executado "w, r, a")
-  file = fopen("Filmes.txt", "w");        
+  file = fopen("Movies.txt", "w");        
 
   for(int i = 0; i < totalMovies; i++) {
-    //função que escreve dentro do arquivo. fprintf(ponteiro, "mensagem").
     fprintf(file, "{ \"%s\", %d, \"%s\", \"%s\", %.2f, %d, \"%s\" }\n",       
             movies[i].title,
             movies[i].releaseDate,
@@ -153,29 +142,25 @@ void saveMovies() {
             movies[i].avaiability,
             movies[i].code);
   }
-
-  //fclose serve para fechar o arquivo associado
   fclose(file);     
-  printf("Filme(s) salvo(s) com sucesso!\n");
+  printf("Movie(s) saved sucessfully!\n");
   printf("\n");
 }
 
 
-//função que carrega os filmes
 void loadMovies() {       
   FILE *file;
-  file = fopen("Filmes.txt", "r");
+  file = fopen("Movies.txt", "r");
 
   if(file == NULL) {
-    printf("Erro ao carregar!\n");
+    printf("Loading error!\n");
     printf("\n");
     return;
   }
   else {
-    printf("Arquivo carregado com sucesso!\n");
+    printf("File loaded sucessfully!\n");
     printf("\n");
     while(fscanf(file, "{ \"%[^\"]\", %d, \"%[^\"]\", \"%[^\"]\", %f, %d, \"%[^\"]\" }\n",
-          //função que escaneia um arquivo. fscanf(ponteiro, "variaveis", alocação)
           movies[totalMovies].title,
           &movies[totalMovies].releaseDate,
           movies[totalMovies].director,
@@ -184,42 +169,38 @@ void loadMovies() {
           &movies[totalMovies].avaiability,
           movies[totalMovies].code) != EOF) {
             totalMovies++;
-          //EOF é uma condição do SO, atingida quando não há mais dados a serem lidos
     }
   }
   fclose(file);
 }
 
 
-//função para imprimir a data de aluguel. É um extra
 void rentalTime() {
   struct tm *date_time;
   time_t seconds;
   time(&seconds);
   date_time = localtime(&seconds);
 
-  printf("Hora: %d:%d:%d\n", date_time->tm_hour, date_time->tm_min, date_time->tm_sec);
-  printf("Data: %d/%d/%d\n", date_time->tm_mday, date_time->tm_mon + 1, date_time->tm_year + 1900);
+  printf("Hour: %d:%d:%d\n", date_time->tm_hour, date_time->tm_min, date_time->tm_sec);
+  printf("Date: %d/%d/%d\n", date_time->tm_mday, date_time->tm_mon + 1, date_time->tm_year + 1900);
 }
 
 
-//função para imprimir a data de devolução
 void devolutionTime() {
   struct tm *date_time;
   time_t seconds;
   time(&seconds);
   date_time = localtime(&seconds);
 
-  printf("Data: %d/%d/%d\n", date_time->tm_mday + 3, date_time->tm_mon + 1, date_time->tm_year + 1900);
+  printf("Date: %d/%d/%d\n", date_time->tm_mday + 3, date_time->tm_mon + 1, date_time->tm_year + 1900);
 }
 
 
-//função para alugar um filme
 void rentMovie(Movie movies[MAX_MOVIES]) {
-  printf("- - - - Aluguel de Filme - - - -\n");
+  printf("- - - - Movie Rental - - - -\n");
 
   char request[MAX_STRING];
-  printf("Titulo do filme: ");
+  printf("Movie title: ");
   fgets(request, MAX_STRING, stdin);
   request[strcspn(request, "\n")] = '\0';
   
@@ -228,47 +209,46 @@ void rentMovie(Movie movies[MAX_MOVIES]) {
     Movie aux = movies[i];
     result = strcmp(request, aux.title);
     if(result == 0) {
-      printf("Quantidade: ");
+      printf("Quantity: ");
       scanf("%d", &demandQtt);
 
       if(demandQtt > aux.avaiability) {
-        printf("\nQuantidade insuficiente disponivel!\n");
+        printf("\nInsufficient quantity avaiable!\n");
         printf("\n");
         return;
       }
       else {
         movies[i].avaiability = movies[i].avaiability - demandQtt;
-        printf("\nFilme alugado com sucesso!\n");
+        printf("\nMovie rented sucessfully!\n");
         printf("\n");
 
-        printf("- - - - Recibo de Aluguel - - - -\n");
-        printf("Filme: %s\n", request);
-        printf("Codigo do filme: %s\n", aux.code);
-        printf("Quantidade: %d\n", demandQtt);
-        printf("Valor a ser pago: R$ %d,00\n", demandQtt * 10);
+        printf("- - - - Rental Receipt - - - -\n");
+        printf("Movie: %s\n", request);
+        printf("Movie code: %s\n", aux.code);
+        printf("Quantity: %d\n", demandQtt);
+        printf("Total: U$ %d.00\n", demandQtt * 10);
         rentalTime();
         printf("\n");
-        printf("Devolucao:\n");
+        printf("Devolution:\n");
         devolutionTime();
         printf("\n");
-        printf("Observacoes:\n");
-        printf("Multa para cada dia de atraso no valor de R$2,00.\n");
-        printf("A partir da data de recebimento, o cliente tem ate 3 dias para devolver o filme sem multa.\n");
-        printf("A integridade deste filme, bem como o compromisso de devolve-lo e de responsabilidade\ndo cliente, bem como o pagamento de multa em eventuais atrasos, danos ou perda.\n");
+        printf("Notes:\n");
+        printf("For each day of delay of devolution, the constumer will be fined with a U$ 2.00 fee.\n");
+        printf("From the day of receiving, the costumer has 3 days to hand in the movie(s) without being fined.\n");
+        printf("The integrity of this movie, as well the compromise to devolve is all of the costumer,\nas well eventual delay, lost or damage.\n");
         printf("\n");
       }
       break;
     }
   }
   if(result != 0) {
-    printf("\nFilme nao encontrado/disponivel!\n");
+    printf("\nMovie not found/avaiable!\n");
     printf("\n");
     return;
   }
 }
 
 
-//função para limpar a entrada padrão <stdin>
 void flush() {        
   while(getchar() != '\n');
 }
@@ -277,12 +257,10 @@ void flush() {
 int main() {
   int option;
   char name[MAX_STRING];
-
-  //nesse caso é mais coveniente usar "do while" ao invés de "for"
   do {
     printf("- - - - MEGA VIDEO - - - -\n");
-    printf("Opcoes:\n1. Cadastrar filme\n2. Ver filmes cadastrados\n3. Ver dados de um filme\n4. Excluir um filme\n5. Salvar\n6. Carregar\n7. Alugar e emitir comprovante de aluguel\n8. Sair\n");
-    printf("Escolha uma opcao: ");
+    printf("Options:\n1. Register a movie\n2. See registered movies\n3. See data of a movie\n4. Delete a movie\n5. Save\n6. Load\n7. Rent and print receipt\n8. Exit\n");
+    printf("Choose an option: ");
     scanf("%d", &option);
     flush();
     printf("\n");
@@ -292,17 +270,17 @@ int main() {
         if(totalMovies < MAX_MOVIES) {
           movies[totalMovies] = registerMovie();
           totalMovies++;
-          printf("Total cadastrado: %d/%d\n", totalMovies, MAX_MOVIES);
+          printf("Total registered: %d/%d\n", totalMovies, MAX_MOVIES);
           printf("\n");
         }
         else {
-            printf("Quantidade maxima cadastrada! (%d/%d)\n", totalMovies, MAX_MOVIES);
+            printf("Maximium total registered! (%d/%d)\n", totalMovies, MAX_MOVIES);
             printf("\n");
           }
         break;
       case 2:
         if(totalMovies == 0) {
-           printf("Nenhum filme cadastrado!\n");
+           printf("No movie registered!\n");
            printf("\n");
         }
         else
@@ -310,11 +288,11 @@ int main() {
         break;
       case 3:
         if(totalMovies == 0) {
-          printf("Nenhum filme cadastrado!\n");
+          printf("No movie registered!\n");
           printf("\n");
         }
         else {
-          printf("Filme: ");
+          printf("Movie: ");
           fgets(name, MAX_STRING, stdin);
           name[strcspn(name, "\n")] = '\0';
           searchMovie(name, movies);
@@ -322,11 +300,11 @@ int main() {
         break;
       case 4:
         if(totalMovies == 0) {
-          printf("Nenhum filme cadastrado!\n");
+          printf("No movie registered!\n");
           printf("\n");
         }
         else {
-          printf("Filme: ");
+          printf("No movie registered!\n");
           fgets(name, MAX_STRING, stdin);
           name[strcspn(name, "\n")] = '\0';
           deleteMovie(name, movies);
@@ -334,7 +312,7 @@ int main() {
         break;
       case 5:
         if(totalMovies == 0) {
-          printf("Erro! Nao foi possivel salvar\n");
+          printf("Error! Cannot save\n");
           printf("\n");
         }
         else
@@ -345,20 +323,20 @@ int main() {
         break;
       case 7:
         if(totalMovies == 0) {
-          printf("Erro! Nao foi possivel alugar!\n");
+          printf("Error! Cannot rent!\n");
           printf("\n");
         }
         else
           rentMovie(movies);
         break;
       case 8:
-        printf("Obrigado por alugar na MEGA VIDEO!\n");
-        printf("Horario de funcioamento:\nSEG a SEX, das 13:00 as 21:00\nSAB e DOM de 13:00 as 17:00\n");
+        printf("Thank you for coming to  MEGA VIDEO!\n");
+        printf("Opening hours:\nMON to FRI, from  1:00 p.m. to 9:00 p.m.\nSAT to SUN from 1:00 p.m. to 5:00 p.m.\n");
         printf("\n");
-        printf("Saindo...\n");
+        printf("Exiting...\n");
         break;
       default:
-        printf("Opcao invalida!\n");
+        printf("Invalid option!\n");
         printf("\n");
     }
   } while(option != 8);
