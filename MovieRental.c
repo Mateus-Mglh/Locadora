@@ -3,11 +3,11 @@
 #include <string.h>
 #include <time.h>
 
-
+//definem  constantes
 #define MAX_STRING 150        
 #define MAX_MOVIES 5
 
-
+//é uma estrutura
 typedef struct{
   char title[MAX_STRING];
   int releaseDate;
@@ -16,18 +16,16 @@ typedef struct{
   float rating;
   int avaiability;
   char code[MAX_STRING];
-}Movie;
+}Movie;  //nome/tipo dessa estrutura 
 
+Movie movies[MAX_MOVIES];  //vetor que armazenará os filmes
+int totalMovies = 0;  //contador para a quantidade de filmes salvos 
+void flush();  //função para limpar o buffer do teclado
 
-Movie movies[MAX_MOVIES];
-int totalMovies = 0;     
-void flush();
-
-
-Movie registerMovie(){       
-  printf("- - - - Movie Registration - - - -\n");
-
+//função para registro de filmes
+Movie registerMovie(){  
   Movie m;
+  printf("- - - - Movie Registration - - - -\n");
   printf("Movie title: ");
   fgets(m.title, MAX_STRING, stdin);
   m.title[strcspn(m.title, "\n")] = '\0';
@@ -60,10 +58,9 @@ Movie registerMovie(){
   return m;
 }
 
-
-void showMovies(){
-  printf("- - - - Movies Registered - - - -\n");
-        
+//função para mostrar os filmes salvos. Recebe o vetor que armazena os filmes
+void showMovies(Movie movies[totalMovies]){
+  printf("- - - - Movies Registered - - - -\n"); 
   for(int i = 0; i < totalMovies; i++) {
     printf("Movie %d\n", i + 1);
     printf("Title: %s\n", movies[i].title);
@@ -77,12 +74,11 @@ void showMovies(){
   }
 }
 
-
-void searchMovie(char name[MAX_STRING], Movie movies[MAX_MOVIES]){                
+//função para procurar filme pelo nome. Recebe o nome do filme a ser procurado, e recebe o vetor que armazena os filmes
+void searchMovie(char name[MAX_STRING], Movie movies[totalMovies]){                
   for(int i = 0; i < totalMovies; i++){
     Movie aux = movies[i];
-    int result = strcmp(name, aux.title);
-    
+    int result = strcmp(name, aux.title);  //função strcmp compara duas strings. strcmp(string1, string2)
     if(result == 0){
       printf("Release date: %d\n", aux.releaseDate);
       printf("Director: %s\n", aux.director);
@@ -96,8 +92,8 @@ void searchMovie(char name[MAX_STRING], Movie movies[MAX_MOVIES]){
   printf("\nMovie not found!\n");
 }
 
-
-void deleteMovie(char name[MAX_STRING], Movie movies[MAX_MOVIES]){
+//função que deleta um filme. Recebe o nome do filme a ser deleta, e recebe o vetor que armazena os filmes
+void deleteMovie(char name[MAX_STRING], Movie movies[totalMovies]){
   int indexMovie;
   for(int i = 0; i < MAX_MOVIES; i++) {
     Movie aux = movies[i];
@@ -114,19 +110,18 @@ void deleteMovie(char name[MAX_STRING], Movie movies[MAX_MOVIES]){
       }
 
       for(int k = indexMovie; k < totalMovies; k++)
-        movies[k] = movies[k + 1];
-      
+        movies[k] = movies[k + 1]; 
+
       totalMovies--;
       printf("\nMovie deleted!\n");
     }
   }
 }
 
-
+//função que salva os filmes em um arquivo de texto
 void saveMovies(){ 
   FILE *file;
   file = fopen("Movies.txt", "w");        
-
   for(int i = 0; i < totalMovies; i++){
     fprintf(file, "{ \"%s\", %d, \"%s\", \"%s\", %.2f, %d, \"%s\" }\n",       
             movies[i].title,
@@ -141,11 +136,10 @@ void saveMovies(){
   printf("Movie(s) saved sucessfully!\n");
 }
 
-
+//função que carrega os filmes a partir de um arquivo de texto
 void loadMovies(){       
   FILE *file;
   file = fopen("Movies.txt", "r");
-
   if(file == NULL){
     printf("Loading error!\n");
     return;
@@ -166,7 +160,7 @@ void loadMovies(){
   fclose(file);
 }
 
-
+//função que mostra a hora de locação
 void rentalTime(){
   struct tm *date_time;
   time_t seconds;
@@ -177,7 +171,7 @@ void rentalTime(){
   printf("Date: %d/%d/%d\n", date_time->tm_mday, date_time->tm_mon + 1, date_time->tm_year + 1900);
 }
 
-
+//função que mostra a data de devolução
 void devolutionTime(){
   struct tm *date_time;
   time_t seconds;
@@ -187,15 +181,14 @@ void devolutionTime(){
   printf("Date: %d/%d/%d\n", date_time->tm_mday + 3, date_time->tm_mon + 1, date_time->tm_year + 1900);
 }
 
-
-void rentMovie(Movie movies[MAX_MOVIES]){
-  printf("- - - - Movie Rental - - - -\n");
-
+//função para alugar um filme. Recebe o vetor que armazena os filmes
+void rentMovie(Movie movies[totalMovies]){
   char request[MAX_STRING];
+  printf("- - - - Movie Rental - - - -\n");
   printf("Movie title: ");
   fgets(request, MAX_STRING, stdin);
   request[strcspn(request, "\n")] = '\0';
-  
+
   int result, demandQtt;
   for(int i = 0; i < totalMovies; i++) {
     Movie aux = movies[i];
@@ -211,7 +204,6 @@ void rentMovie(Movie movies[MAX_MOVIES]){
       else{
         movies[i].avaiability = movies[i].avaiability - demandQtt;
         printf("\nMovie rented sucessfully!\n\n");
-
         printf("- - - - Rental Receipt - - - -\n");
         printf("Movie: %s\n", request);
         printf("Movie code: %s\n", aux.code);
@@ -219,6 +211,7 @@ void rentMovie(Movie movies[MAX_MOVIES]){
         printf("Total: U$ %d.00\n", demandQtt * 10);
         rentalTime();
         printf("\n");
+
         printf("Devolution:\n");
         devolutionTime();
         printf("\n");
@@ -236,11 +229,10 @@ void rentMovie(Movie movies[MAX_MOVIES]){
   }
 }
 
-
-void returnMovie(Movie movies[MAX_MOVIES]){
-  printf("- - - - Movie Devolution - - - -\n");
-  
+//função para retornar o filme alugado. Recebe o vetor que armazena os filmes
+void returnMovie(Movie movies[totalMovies]){
   char rentedMovie[MAX_STRING];
+  printf("- - - - Movie Devolution - - - -\n");
   printf("Movie title: ");
   fgets(rentedMovie, MAX_STRING, stdin);
   rentedMovie[strcspn(rentedMovie, "\n")] = '\0';
@@ -255,7 +247,6 @@ void returnMovie(Movie movies[MAX_MOVIES]){
       
       if(rentedQtt <= 0)
         printf("Invalid quantity\n");
-
       else{
         movies[i].avaiability = movies[i].avaiability + rentedQtt;
         printf("\nMovie sucessfully returned!\n");
@@ -269,11 +260,9 @@ void returnMovie(Movie movies[MAX_MOVIES]){
   }
 }
 
-
 void flush(){        
   while(getchar() != '\n');
 }
-
 
 void pause(){
   printf("Press any key to continue  ");
@@ -281,7 +270,7 @@ void pause(){
   system("cls");
 }
 
-
+//função principal
 int main(){
   int option;
   char name[MAX_STRING];
@@ -302,7 +291,6 @@ int main(){
         }
         else
           printf("Maximium total registered! (%d/%d)\n", totalMovies, MAX_MOVIES);
-
         printf("\n");
         pause();
         break;
@@ -310,8 +298,7 @@ int main(){
         if(totalMovies == 0)
            printf("No movie registered!\n\n");
         else
-          showMovies();
-        
+          showMovies(movies);
         pause();
         break;
       case 3:
@@ -343,7 +330,6 @@ int main(){
           printf("Error! Cannot save\n");
         else
           saveMovies();
-
         printf("\n");
         pause();
         break;
@@ -357,7 +343,6 @@ int main(){
           printf("Error! Cannot rent!\n");
         else
           rentMovie(movies);
-        
         printf("\n");
         pause();
         break;
@@ -376,6 +361,6 @@ int main(){
         printf("\n");
         pause();
     }
-  } while(option != 9);
+  }while(option != 9);
   return 0;
 }
